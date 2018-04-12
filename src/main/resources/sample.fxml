@@ -14,9 +14,9 @@
     <children>
         <Pane minHeight="-Infinity" minWidth="-Infinity" prefHeight="1000.0" prefWidth="1400.0" GridPane.columnIndex="0" GridPane.rowIndex="0">
             <children>
-                <TextArea layoutX="96.0" layoutY="79.0" prefHeight="776.0" prefWidth="542.5" wrapText="true" />
-                <TextArea layoutX="763.0" layoutY="79.0" prefHeight="776.0" prefWidth="542.5" wrapText="true" />
-                <Button layoutX="638.0" layoutY="898.0" mnemonicParsing="false" prefHeight="31.1328125" prefWidth="125.0" text="Transpile" />
+                <TextArea fx:id = "cCode" layoutX="96.0" layoutY="79.0" prefHeight="776.0" prefWidth="542.5" wrapText="true" />
+                <TextArea fx:id = "rustCode" layoutX="763.0" layoutY="79.0" prefHeight="776.0" prefWidth="542.5" wrapText="true" />
+                <Button onAction="#handleTranspileAction" layoutX="638.0" layoutY="898.0" mnemonicParsing="false" prefHeight="31.1328125" prefWidth="125.0" text="Transpile" />
                 <Text layoutX="324.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="C code">
                     <font>
                         <Font size="25.0" fx:id="x1" />
