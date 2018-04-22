@@ -1,4 +1,4 @@
-package gen;// Generated from /home/kenjik/University/c2rust/src/main/antlr/MarkupLexer.g4 by ANTLR 4.7
+package gen.Markup;// Generated from /home/kenjik/University/c2rust/src/main/antlr/MarkupLexer.g4 by ANTLR 4.7
 import org.antlr.v4.runtime.Lexer;
 import org.antlr.v4.runtime.CharStream;
 import org.antlr.v4.runtime.Token;

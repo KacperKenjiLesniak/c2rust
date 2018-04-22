@@ -7,10 +7,17 @@ import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
+import transpiler.Transpiler;
 
 import javax.xml.soap.Text;
 
 public class Controller {
+
+    private Transpiler transpiler;
+
+    public Controller() {
+        this.transpiler = new Transpiler();
+    }
 
     ObservableList<String> unknownExpressionsList = FXCollections.observableArrayList("Ignore", "Copy");
 
@@ -35,6 +42,7 @@ public class Controller {
     }
 
     public void handleTranspileAction(ActionEvent actionEvent) {
-        rustCode.setText(cCode.getText());
+        String rustCodeString = transpiler.transpile(cCode.getText());
+        rustCode.setText(rustCodeString);
     }
 }

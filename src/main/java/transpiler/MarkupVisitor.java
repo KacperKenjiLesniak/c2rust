@@ -1,14 +1,9 @@
-package parser;
+package transpiler;
 
-import gen.MarkupParser;
-import gen.MarkupParserBaseVisitor;
-import org.antlr.v4.runtime.*;
-import org.antlr.v4.runtime.misc.*;
-import org.antlr.v4.runtime.tree.*;
+import gen.Markup.MarkupParser;
+import gen.Markup.MarkupParserBaseVisitor;
+
 import java.io.PrintStream;
-import java.util.HashMap;
-import java.util.Map;
-import java.util.List;
 
 public class MarkupVisitor extends MarkupParserBaseVisitor<String>
 {

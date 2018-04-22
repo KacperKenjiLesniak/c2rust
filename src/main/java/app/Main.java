@@ -5,7 +5,7 @@ import javafx.fxml.FXMLLoader;
 import javafx.scene.Parent;
 import javafx.scene.Scene;
 import javafx.stage.Stage;
-import parser.Parser;
+import transpiler.Transpiler;
 
 public class Main extends Application {
 
@@ -17,9 +17,7 @@ public class Main extends Application {
         primaryStage.show();
     }
 
-
     public static void main(String[] args) {
-        new Parser().parse();
         launch(args);
     }
 }

@@ -1,4 +1,4 @@
-package gen;// Generated from /home/kenjik/University/c2rust/src/main/antlr/MarkupParser.g4 by ANTLR 4.7
+package gen.Markup;// Generated from /home/kenjik/University/c2rust/src/main/antlr/MarkupParser.g4 by ANTLR 4.7
 
 import org.antlr.v4.runtime.ParserRuleContext;
 import org.antlr.v4.runtime.tree.ErrorNode;
