@@ -33,6 +33,8 @@ public class Controller {
     @FXML
     private Button transpileButton;
 
+    public static String rustCodeStaticString = "";
+
     @FXML
     private void initialize(){
         unknownExpressions.setValue("Unknown Expresions");
@@ -43,6 +45,6 @@ public class Controller {
 
     public void handleTranspileAction(ActionEvent actionEvent) {
         String rustCodeString = transpiler.transpile(cCode.getText());
-        rustCode.setText(rustCodeString);
+        rustCode.setText(rustCodeStaticString);
     }
 }
