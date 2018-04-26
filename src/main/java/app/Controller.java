@@ -45,6 +45,6 @@ public class Controller {
 
     public void handleTranspileAction(ActionEvent actionEvent) {
         String rustCodeString = transpiler.transpile(cCode.getText());
-        rustCode.setText(rustCodeStaticString);
+        rustCode.setText(rustCodeString);
     }
 }

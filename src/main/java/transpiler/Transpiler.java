@@ -23,11 +23,12 @@ public class Transpiler {
         CommonTokenStream commonTokenStream = new CommonTokenStream(cLexer);
 //        MarkupParser markupParser = new MarkupParser(commonTokenStream);
         CParser cParser = new CParser(commonTokenStream);
+        cParser.setBuildParseTree(true);
 //        MarkupParser.FileContext fileContext = markupParser.file();
-        final CParser.CompilationUnitContext context = cParser.compilationUnit();
+        ParseTree tree = cParser.compilationUnit();
 //        MarkupVisitor visitor = new MarkupVisitor(System.out);
         Visitor visitor = new Visitor();
 //        visitor.visit(fileContext);
-        return visitor.visit(context);
+        return visitor.visit(tree);
     }
 }
