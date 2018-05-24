@@ -147,6 +147,11 @@ public class Visitor extends CBaseVisitor<String> {
     }
 
     @Override
+    public String visitAdditiveExpression(CParser.AdditiveExpressionContext ctx) {
+        return ctx.getText();
+    }
+
+    @Override
     public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
         if (ctx.getChildCount()==4){
             return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
@@ -174,10 +179,10 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitIterationStatement(CParser.IterationStatementContext ctx) {
         if (ctx.getChild(0).getText().equals("while")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4)) + "\n";
         }
         else if (ctx.getChild(0).getText().equals("for")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4)) + "\n";
         }
         return visitChildren(ctx);
     }
