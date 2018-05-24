@@ -76,11 +76,39 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitCompoundStatement(CParser.CompoundStatementContext ctx){
-        return "{\n" + visitChildren(ctx) + "}";
+        return "{\n" + visitChildren(ctx) + "\n}";
     }
 
     @Override
     public String visitJumpStatement(CParser.JumpStatementContext ctx){
         return ctx.getChild(1).getText() + "\n";
+    }
+
+    @Override
+    public String visitSelectionStatement(CParser.SelectionStatementContext ctx) {
+        return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+    }
+
+    @Override
+    public String visitEqualityExpression(CParser.EqualityExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
+        }
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public String visitPrimaryExpression(CParser.PrimaryExpressionContext ctx) {
+        return ctx.getText();
+    }
+
+    @Override
+    public String visitAssignmentOperator(CParser.AssignmentOperatorContext ctx) {
+        return ctx.getText();
+    }
+
+    @Override
+    public String visitExpressionStatement(CParser.ExpressionStatementContext ctx) {
+        return visit(ctx.getChild(0)) + ctx.getChild(1).getText();
     }
 }
