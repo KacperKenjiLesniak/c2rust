@@ -91,7 +91,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDirectDeclarator(CParser.DirectDeclaratorContext ctx) {
-        if(ctx.getChildCount()==1) return ctx.getText();
+        if(ctx.getChildCount()==1 || ctx.getChildCount()==3) return ctx.getText();
         else return visit(ctx.getChild(0));
     }
 
