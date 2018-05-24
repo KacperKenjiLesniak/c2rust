@@ -146,6 +146,15 @@ public class Visitor extends CBaseVisitor<String> {
     }
 
     @Override
+    public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
+        if (ctx.getChildCount()==4){
+            return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
+                    + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
+        }
+        else return visitChildren(ctx);
+    }
+
+    @Override
     public String visitLogicalAndExpression(CParser.LogicalAndExpressionContext ctx) {
         if (ctx.getChildCount() == 3) {
             return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
