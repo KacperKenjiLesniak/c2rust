@@ -128,4 +128,13 @@ public class Visitor extends CBaseVisitor<String> {
     public String visitExpressionStatement(CParser.ExpressionStatementContext ctx) {
         return visit(ctx.getChild(0)) + ctx.getChild(1).getText();
     }
+
+    @Override
+    public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
+        if (ctx.getChildCount()==4){
+            return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
+                    + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
+        }
+        else return visitChildren(ctx);
+    }
 }
