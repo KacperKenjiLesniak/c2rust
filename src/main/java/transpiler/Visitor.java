@@ -1,11 +1,8 @@
 package transpiler;
 
-import app.Controller;
 import gen.C.CBaseVisitor;
 import gen.C.CParser;
-import org.antlr.v4.runtime.tree.ParseTree;
 
-import java.util.List;
 
 public class Visitor extends CBaseVisitor<String> {
 
