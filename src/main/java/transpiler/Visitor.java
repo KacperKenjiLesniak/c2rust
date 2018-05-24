@@ -53,7 +53,6 @@ public class Visitor extends CBaseVisitor<String> {
         return "let " + visitChildren(ctx) + ";\n";
     }
 
-
     @Override
     public String visitInitDeclaratorList(CParser.InitDeclaratorListContext ctx) {
         return visitChildren(ctx);
@@ -61,7 +60,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitInitDeclarator(CParser.InitDeclaratorContext ctx) {
-        return ctx.getText();
+        return visit(ctx.getChild(0)) + " = " + visit(ctx.getChild(2));
     }
 
     @Override
@@ -71,7 +70,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDeclarator(CParser.DeclaratorContext ctx){
-        return ctx.getText();
+        return visitChildren(ctx);
     }
 
     @Override
@@ -82,5 +81,23 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitJumpStatement(CParser.JumpStatementContext ctx){
         return ctx.getChild(1).getText() + "\n";
+    }
+
+    @Override
+    public String visitInitializer(CParser.InitializerContext ctx) {
+        if (ctx.getChildCount()==1) return ctx.getText();
+        else return "[" + visit(ctx.getChild(1)) + "]";
+    }
+
+    @Override
+    public String visitDirectDeclarator(CParser.DirectDeclaratorContext ctx) {
+        if(ctx.getChildCount()==1) return ctx.getText();
+        else return visit(ctx.getChild(0));
+    }
+
+    @Override
+    public String visitInitializerList(CParser.InitializerListContext ctx) {
+        if (ctx.getChildCount()==3) return visit(ctx.getChild(0)) + ", " + visit(ctx.getChild(2));
+        else return  visitChildren(ctx);
     }
 }
