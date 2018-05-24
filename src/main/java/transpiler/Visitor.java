@@ -103,11 +103,27 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitSelectionStatement(CParser.SelectionStatementContext ctx) {
-        return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+        String ifStatement = ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+        if (ctx.getChildCount() == 5) {
+            return ifStatement;
+        }
+        else if (ctx.getChildCount() == 7) {
+            String elseStatement = ctx.getChild(5).getText() + " " + visit(ctx.getChild(6));
+            return ifStatement + "\n" + elseStatement;
+        }
+        return visitChildren(ctx);
     }
 
     @Override
     public String visitEqualityExpression(CParser.EqualityExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
+        }
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public String visitRelationalExpression(CParser.RelationalExpressionContext ctx) {
         if (ctx.getChildCount() == 3) {
             return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
         }
@@ -127,5 +143,21 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitExpressionStatement(CParser.ExpressionStatementContext ctx) {
         return visit(ctx.getChild(0)) + ctx.getChild(1).getText();
+    }
+
+    @Override
+    public String visitLogicalAndExpression(CParser.LogicalAndExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
+        }
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public String visitLogicalOrExpression(CParser.LogicalOrExpressionContext ctx) {
+        if (ctx.getChildCount() == 3) {
+            return visit(ctx.getChild(0)) + " " + ctx.getChild(1).getText() + " " + visit(ctx.getChild(2));
+        }
+        return visitChildren(ctx);
     }
 }
