@@ -3,6 +3,7 @@ package transpiler;
 import gen.C.CBaseVisitor;
 import gen.C.CParser;
 import org.antlr.v4.runtime.tree.ParseTree;
+import org.antlr.v4.runtime.tree.TerminalNode;
 
 
 public class Visitor extends CBaseVisitor<String> {
@@ -133,8 +134,15 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitPrimaryExpression(CParser.PrimaryExpressionContext ctx) {
-        return ctx.getText();
+        if (ctx.getChildCount() == 1) return ctx.getText();
+        else if (ctx.getChildCount() == 3) return ctx.getChild(0) + visit(ctx.getChild(1)) + ctx.getChild(2);
+        return visitChildren(ctx);
     }
+
+//    @Override
+//    public String visitTerminal(TerminalNode node) {
+//        return node.getText();
+//    }
 
     @Override
     public String visitAssignmentOperator(CParser.AssignmentOperatorContext ctx) {

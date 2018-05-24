@@ -43,6 +43,20 @@ public class TranspilerTest {
     }
 
     @Test
+    public void shouldTranspileIfAndOrStatement(){
+        String assignment = transpiler.transpile("int main(){if(a==5 && (a<6 || a>0)){a=6;}}");
+
+        assertEquals("fn main(){\nif a == 5 && (a < 6 || a > 0) {\na=6;\n}\n}", assignment);
+    }
+
+    @Test
+    public void shouldTranspileIfAndStatement(){
+        String assignment = transpiler.transpile("int main(){if(a==5 && a<6 && a>0){a=6;}}");
+
+        assertEquals("fn main(){\nif a == 5 && a < 6 && a > 0 {\na=6;\n}\n}", assignment);
+    }
+
+    @Test
     public void shouldTranspileIfElseStatement(){
         String assignment = transpiler.transpile("int main(){if(a==5){a=6;}else a=7;}");
 
