@@ -2,6 +2,7 @@ package transpiler;
 
 import gen.C.CBaseVisitor;
 import gen.C.CParser;
+import org.antlr.v4.runtime.tree.ParseTree;
 
 
 public class Visitor extends CBaseVisitor<String> {
@@ -169,4 +170,43 @@ public class Visitor extends CBaseVisitor<String> {
         }
         return visitChildren(ctx);
     }
+
+    @Override
+    public String visitIterationStatement(CParser.IterationStatementContext ctx) {
+        if (ctx.getChild(0).getText().equals("while")) {
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+        }
+        else if (ctx.getChild(0).getText().equals("for")) {
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+        }
+        return visitChildren(ctx);
+    }
+
+    @Override
+    public String visitForCondition(CParser.ForConditionContext ctx) {
+        return visit(ctx.getChild(0)) + visit(ctx.getChild(2));
+    }
+
+    @Override
+    public String visitForExpression(CParser.ForExpressionContext ctx) {
+        return getForRange(ctx.getChild(0));
+    }
+
+    private String getForRange(ParseTree child) {
+        if (child == null) return "";
+        if (child.getClass().equals(CParser.RelationalExpressionContext.class) && child.getChildCount() > 2) {
+            if (child.getChild(1).getText().equals("<")) return child.getChild(2).getText() + " ";
+            else if (child.getChild(1).equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+" ";
+        }
+        return getForRange(child.getChild(0));
+    }
+
+
+    @Override
+    public String visitForDeclaration(CParser.ForDeclarationContext ctx) {
+        return ctx.getChild(1).getChild(0).getChild(0).getText() + " in "
+                + ctx.getChild(1).getChild(0).getChild(2).getText() + "..";
+    }
+
+
 }
