@@ -81,11 +81,6 @@ public class Visitor extends CBaseVisitor<String> {
     }
 
     @Override
-    public String visitJumpStatement(CParser.JumpStatementContext ctx){
-        return ctx.getChild(1).getText() + "\n";
-    }
-
-    @Override
     public String visitInitializer(CParser.InitializerContext ctx) {
         if (ctx.getChildCount()==1) return ctx.getText();
         else return "[" + visit(ctx.getChild(1)) + "]";
@@ -139,11 +134,6 @@ public class Visitor extends CBaseVisitor<String> {
         return visitChildren(ctx);
     }
 
-//    @Override
-//    public String visitTerminal(TerminalNode node) {
-//        return node.getText();
-//    }
-
     @Override
     public String visitAssignmentOperator(CParser.AssignmentOperatorContext ctx) {
         return ctx.getText();
@@ -182,10 +172,10 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitIterationStatement(CParser.IterationStatementContext ctx) {
         if (ctx.getChild(0).getText().equals("while")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
         }
         else if (ctx.getChild(0).getText().equals("for")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + " " + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
         }
         return visitChildren(ctx);
     }
@@ -203,8 +193,8 @@ public class Visitor extends CBaseVisitor<String> {
     private String getForRange(ParseTree child) {
         if (child == null) return "";
         if (child.getClass().equals(CParser.RelationalExpressionContext.class) && child.getChildCount() > 2) {
-            if (child.getChild(1).getText().equals("<")) return child.getChild(2).getText() + " ";
-            else if (child.getChild(1).equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+" ";
+            if (child.getChild(1).getText().equals("<")) return child.getChild(2).getText();
+            else if (child.getChild(1).equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+"";
         }
         return getForRange(child.getChild(0));
     }
@@ -215,6 +205,5 @@ public class Visitor extends CBaseVisitor<String> {
         return ctx.getChild(1).getChild(0).getChild(0).getText() + " in "
                 + ctx.getChild(1).getChild(0).getChild(2).getText() + "..";
     }
-
 
 }

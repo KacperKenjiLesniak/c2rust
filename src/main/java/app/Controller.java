@@ -9,8 +9,6 @@ import javafx.scene.control.ChoiceBox;
 import javafx.scene.control.TextArea;
 import transpiler.Transpiler;
 
-import javax.xml.soap.Text;
-
 public class Controller {
 
     private Transpiler transpiler;
@@ -25,10 +23,10 @@ public class Controller {
     private ChoiceBox<String> unknownExpressions;
 
     @FXML
-    private TextArea cCode;
+    private CCodeEditor cCode;
 
     @FXML
-    private TextArea rustCode;
+    private RustCodeEditor rustCode;
 
     @FXML
     private Button transpileButton;
@@ -44,7 +42,7 @@ public class Controller {
     }
 
     public void handleTranspileAction(ActionEvent actionEvent) {
-        String rustCodeString = transpiler.transpile(cCode.getText());
-        rustCode.setText(rustCodeString);
+        String rustCodeString = transpiler.transpile(cCode.getCode());
+        rustCode.setCode(rustCodeString);
     }
 }
