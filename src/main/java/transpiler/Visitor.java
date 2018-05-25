@@ -3,7 +3,6 @@ package transpiler;
 import gen.C.CBaseVisitor;
 import gen.C.CParser;
 import org.antlr.v4.runtime.tree.ParseTree;
-import org.antlr.v4.runtime.tree.TerminalNode;
 
 
 public class Visitor extends CBaseVisitor<String> {
@@ -177,10 +176,10 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitIterationStatement(CParser.IterationStatementContext ctx) {
         if (ctx.getChild(0).getText().equals("while")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4)) + "\n";
         }
         else if (ctx.getChild(0).getText().equals("for")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4)) + "\n";
         }
         return visitChildren(ctx);
     }
