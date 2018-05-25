@@ -51,6 +51,9 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDeclaration(CParser.DeclarationContext ctx){
+        if (ctx.getChildCount() == 3){
+            return "let " + visit(ctx.getChild(1)) + ctx.getChild(2).getText() + "\n";
+        }
         return "let " + visitChildren(ctx) + ";\n";
     }
 
@@ -66,7 +69,27 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitFunctionDefinition(CParser.FunctionDefinitionContext ctx){
-        return "fn " + visitChildren(ctx);
+        if (ctx.getChild(1).getText().equals("main()")) {
+            return "fn " + ctx.getChild(1).getText() + visit(ctx.getChild(2));
+        }
+        else{
+            return "fn " + visit(ctx.getChild(1)) + " -> " + visit(ctx.getChild(0)) + "\n" + visit(ctx.getChild(2)) + "\n\n";
+        }
+    }
+
+    @Override
+    public String visitTypeSpecifier(CParser.TypeSpecifierContext ctx) {
+        if (ctx.getText().equals("float")) return "f32";
+        if (ctx.getText().equals("double")) return "f64";
+        if (ctx.getText().equals("char")) return "char";
+        if (ctx.getText().equals("int")) return "i32";
+        if (ctx.getText().equals("bool")) return "bool";
+        else return ctx.getText();
+    }
+
+    @Override
+    public String visitParameterDeclaration(CParser.ParameterDeclarationContext ctx) {
+        return ctx.getChild(1).getText() + ": " + visit(ctx.getChild(0));
     }
 
     @Override
@@ -87,7 +110,16 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDirectDeclarator(CParser.DirectDeclaratorContext ctx) {
+        //variable or main function
         if(ctx.getChildCount()==1 || ctx.getChildCount()==3) return ctx.getText();
+        //function
+        if(ctx.getChildCount()==4 && ctx.getParent().getParent().getClass().equals(CParser.FunctionDefinitionContext.class)){
+            return ctx.getChild(0).getText() + ctx.getChild(1).getText() + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
+        }
+        //array definition
+        else if(ctx.getChildCount()==4){
+            return ctx.getChild(0).getText();
+        }
         else return visit(ctx.getChild(0));
     }
 
@@ -105,7 +137,7 @@ public class Visitor extends CBaseVisitor<String> {
         }
         else if (ctx.getChildCount() == 7) {
             String elseStatement = ctx.getChild(5).getText() + " " + visit(ctx.getChild(6));
-            return ifStatement + "\n" + elseStatement;
+            return ifStatement + "\n" + elseStatement + "\n";
         }
         return visitChildren(ctx);
     }
@@ -198,7 +230,7 @@ public class Visitor extends CBaseVisitor<String> {
         if (child == null) return "";
         if (child.getClass().equals(CParser.RelationalExpressionContext.class) && child.getChildCount() > 2) {
             if (child.getChild(1).getText().equals("<")) return child.getChild(2).getText();
-            else if (child.getChild(1).equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+"";
+            else if (child.getChild(1).getText().equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+"";
         }
         return getForRange(child.getChild(0));
     }
