@@ -55,5 +55,24 @@ public class TranspilerTest {
 
         assertEquals("fn main(){\nif a == 5 {\na=6;\n}\nelse a=7;\n}", assignment);
     }
+    @Test
+    public void shouldTranspileFunctionDefinition(){
+        String code = transpiler.transpile("int timesTwo(int a){\n" +
+                "  return a*2;\n" +
+                "}\n" +
+                "\n" +
+                "int main(){\n" +
+                "\tint b = timesTwo(2);\n" +
+                "}");
 
+        assertEquals("fn timesTwo(a: i32) -> i32\n" +
+                "{\n" +
+                "a*2\n" +
+                "}\n" +
+                "\n" +
+                "fn main(){\n" +
+                "let b = timesTwo(2);\n" +
+                "\n" +
+                "}", code);
+    }
 }
