@@ -5,6 +5,8 @@ import org.antlr.v4.runtime.dfa.DFA;
 import org.antlr.v4.runtime.*;
 import org.antlr.v4.runtime.misc.*;
 import org.antlr.v4.runtime.tree.*;
+import transpiler.MyErrorStrategy;
+
 import java.util.List;
 import java.util.Iterator;
 import java.util.ArrayList;
@@ -149,6 +151,7 @@ public class CParser extends Parser {
 		}
 	}
 
+
 	@Override
 	@Deprecated
 	public String[] getTokenNames() {
@@ -176,6 +179,7 @@ public class CParser extends Parser {
 	public CParser(TokenStream input) {
 		super(input);
 		_interp = new ParserATNSimulator(this,_ATN,_decisionToDFA,_sharedContextCache);
+		_errHandler = new MyErrorStrategy();
 	}
 	public static class PrimaryExpressionContext extends ParserRuleContext {
 		public TerminalNode Identifier() { return getToken(CParser.Identifier, 0); }

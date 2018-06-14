@@ -1,8 +1,12 @@
 package transpiler;
 
+import app.Controller;
 import gen.C.CBaseVisitor;
 import gen.C.CParser;
 import org.antlr.v4.runtime.tree.ParseTree;
+
+import java.util.ArrayList;
+import java.util.List;
 
 
 public class Visitor extends CBaseVisitor<String> {
@@ -51,6 +55,13 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDeclaration(CParser.DeclarationContext ctx){
+        final ParseTree assignment = ctx.getChild(1).getChild(0);
+        final ParseTree declarator = assignment.getChild(0);
+        if (ctx.getChildCount() > 2 && ctx.getChild(0).getText().equals("char") &&
+                declarator.getChild(0).getChildCount() > 2){
+            return "let " + declarator.getChild(0).getChild(0).getText()
+                    + " = " + assignment.getChild(2).getText() + ";\n";
+        }
         if (ctx.getChildCount() == 3){
             return "let " + visit(ctx.getChild(1)) + ctx.getChild(2).getText() + "\n";
         }
@@ -73,7 +84,7 @@ public class Visitor extends CBaseVisitor<String> {
             return "fn " + ctx.getChild(1).getText() + visit(ctx.getChild(2));
         }
         else{
-            return "fn " + visit(ctx.getChild(1)) + " -> " + visit(ctx.getChild(0)) + "\n" + visit(ctx.getChild(2)) + "\n\n";
+            return "fn " + visit(ctx.getChild(1)) + " -> " + visit(ctx.getChild(0)) + "\n" + visit(ctx.getChild(2)) + "\n";
         }
     }
 
@@ -99,7 +110,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitCompoundStatement(CParser.CompoundStatementContext ctx){
-        return "{\n" + visitChildren(ctx) + "\n}";
+        return "{\n" + visitChildren(ctx) + "\n}\n";
     }
 
     @Override
@@ -110,8 +121,9 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDirectDeclarator(CParser.DirectDeclaratorContext ctx) {
+        if (ctx.getParent().getParent().getClass().equals(CParser.FunctionDefinitionContext.class) && ctx.getChildCount()==3) return ctx.getText();
+        else if(ctx.getChildCount()==1) return ctx.getText();
         //variable or main function
-        if(ctx.getChildCount()==1 || ctx.getChildCount()==3) return ctx.getText();
         //function
         if(ctx.getChildCount()==4 && ctx.getParent().getParent().getClass().equals(CParser.FunctionDefinitionContext.class)){
             return ctx.getChild(0).getText() + ctx.getChild(1).getText() + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
@@ -177,11 +189,29 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitAdditiveExpression(CParser.AdditiveExpressionContext ctx) {
+        if (ctx.getChildCount()==1){
+            return visitChildren(ctx);
+        }
         return ctx.getText();
     }
 
     @Override
+    public String visitMultiplicativeExpression(CParser.MultiplicativeExpressionContext ctx) {
+        if (ctx.getChildCount()==1) return visitChildren(ctx);
+        return ctx.getText();
+    }
+
+    @Override
+    public String visitJumpStatement(CParser.JumpStatementContext ctx) {
+        return visitChildren(ctx) + "\n";
+    }
+
+    @Override
     public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
+        if(ctx.getChild(0).getText().equals("strcat")){
+            return "let new" + ctx.getChild(2).getChild(0).getText() + " = " + ctx.getChild(2).getChild(0).getText() +
+                    ".to_string() + " +  ctx.getChild(2).getChild(2).getText();
+        }
         if (ctx.getChildCount()==4){
             return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
                     + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
@@ -218,7 +248,20 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitForCondition(CParser.ForConditionContext ctx) {
-        return visit(ctx.getChild(0)) + visit(ctx.getChild(2));
+        String iteratorRevMethod = getIteratorRevMethod(ctx.getChild(4));
+        String iteratorStepByMethod = getIteratorStepByMethod(ctx.getChild(4));
+        if (iteratorStepByMethod.isEmpty() && iteratorRevMethod.isEmpty())
+            return visit(ctx.getChild(0)) + ".." + visit(ctx.getChild(2)) + iteratorStepByMethod;
+        List<String> forDeclarationList = visitIteratorMethodsForDeclaration(ctx.getChild(0));
+        if (!iteratorStepByMethod.isEmpty() && iteratorRevMethod.isEmpty()) {
+            Controller.rustCodeImportString.add("use std::iter::step_by;\n");
+            return forDeclarationList.get(0) + "(" +
+                    forDeclarationList.get(1) + ".." + visit(ctx.getChild(2)) + ")" + iteratorStepByMethod;
+        }
+        Controller.rustCodeImportString.add("use std::iter::step_by;\n");
+        Controller.rustCodeImportString.add("use std::iter::rev;\n");
+        return forDeclarationList.get(0) + "(" + visit(ctx.getChild(2)) + ".."
+                + (Integer.parseInt(forDeclarationList.get(1))+1) + ")" + iteratorRevMethod + iteratorStepByMethod;
     }
 
     @Override
@@ -226,11 +269,39 @@ public class Visitor extends CBaseVisitor<String> {
         return getForRange(ctx.getChild(0));
     }
 
+    private String getIteratorStepByMethod(ParseTree child) {
+        if (child == null) return "";
+        else if (child.getClass().equals(CParser.AssignmentExpressionContext.class) && child.getChildCount() > 2) {
+            return getIteratorStepByMethod(child.getChild(2));
+        }
+        else if (child.getClass().equals(CParser.AdditiveExpressionContext.class) && child.getChildCount() > 2) {
+            String resultMethods = "";
+            if (!child.getChild(2).getText().equals("1")) resultMethods += ".step_by(" + child.getChild(2).getText()+ ")";
+            return resultMethods;
+        }
+        return getIteratorStepByMethod(child.getChild(0));
+    }
+
+    private String getIteratorRevMethod(ParseTree child) {
+        if (child == null) return "";
+        else if (child.getClass().equals(CParser.AssignmentExpressionContext.class) && child.getChildCount() > 2) {
+            return getIteratorRevMethod(child.getChild(2));
+        }
+        else if (child.getClass().equals(CParser.AdditiveExpressionContext.class) && child.getChildCount() > 2) {
+            String resultMethods = "";
+            if (child.getText().contains("-")) resultMethods += ".rev()";
+            return resultMethods;
+        }
+        return getIteratorRevMethod(child.getChild(0));
+    }
+
     private String getForRange(ParseTree child) {
         if (child == null) return "";
         if (child.getClass().equals(CParser.RelationalExpressionContext.class) && child.getChildCount() > 2) {
             if (child.getChild(1).getText().equals("<")) return child.getChild(2).getText();
             else if (child.getChild(1).getText().equals("<=")) return Integer.parseInt(child.getChild(2).getText())+1+"";
+            else if (child.getChild(1).getText().equals(">")) return Integer.parseInt(child.getChild(2).getText())+1+"";
+            else if (child.getChild(1).getText().equals(">=")) return child.getChild(2).getText();
         }
         return getForRange(child.getChild(0));
     }
@@ -239,7 +310,14 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitForDeclaration(CParser.ForDeclarationContext ctx) {
         return ctx.getChild(1).getChild(0).getChild(0).getText() + " in "
-                + ctx.getChild(1).getChild(0).getChild(2).getText() + "..";
+                + ctx.getChild(1).getChild(0).getChild(2).getText();
+    }
+
+    public List<String> visitIteratorMethodsForDeclaration(ParseTree child) {
+        List<String> iteratorMethodsForDeclaration = new ArrayList<>();
+        iteratorMethodsForDeclaration.add(child.getChild(1).getChild(0).getChild(0).getText() + " in ");
+        iteratorMethodsForDeclaration.add(child.getChild(1).getChild(0).getChild(2).getText());
+        return iteratorMethodsForDeclaration;
     }
 
 
