@@ -1,11 +1,13 @@
 package transpiler;
 
+import app.Controller;
 import org.junit.Test;
 
 import static org.junit.Assert.*;
 
 public class TranspilerTest {
     Transpiler transpiler = new Transpiler();
+    Controller controller = new Controller();
 
     @Test
     public void shouldTranspilerDeclaration(){
@@ -56,4 +58,22 @@ public class TranspilerTest {
         assertEquals("fn main(){\nif a == 5 {\na=6;\n}\nelse a=7;\n}", assignment);
     }
 
+    @Test
+    public void shouldTranspileForWithStep(){
+        String code = transpiler.transpile("int main() {\n" +
+                "  for (int a = 5; a > 0; a = a -2) {\n" +
+                "  }\n" +
+                "}");
+        code = controller.createImports() + "\n" + code;
+
+        assertEquals("use std::iter::rev;\n" +
+                "use std::iter::step_by;\n" +
+                "\n" +
+                "fn main(){\n" +
+                "for a in (1..6).rev().step_by(2){\n" +
+                "\n" +
+                "}\n" +
+                "\n" +
+                "}", code);
+    }
 }
