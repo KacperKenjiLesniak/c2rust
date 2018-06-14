@@ -51,6 +51,13 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDeclaration(CParser.DeclarationContext ctx){
+        final ParseTree assignment = ctx.getChild(1).getChild(0);
+        final ParseTree declarator = assignment.getChild(0);
+        if (ctx.getChildCount() > 2 && ctx.getChild(0).getText().equals("char") &&
+                declarator.getChild(0).getChildCount() > 2){
+            return "let " + declarator.getChild(0).getChild(0).getText()
+                    + " = " + assignment.getChild(2).getText() + ";\n";
+        }
         return "let " + visitChildren(ctx) + ";\n";
     }
 
@@ -87,7 +94,8 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDirectDeclarator(CParser.DirectDeclaratorContext ctx) {
-        if(ctx.getChildCount()==1 || ctx.getChildCount()==3) return ctx.getText();
+        if (ctx.getParent().getParent().getClass().equals(CParser.FunctionDefinitionContext.class) && ctx.getChildCount()==3) return ctx.getText();
+        else if(ctx.getChildCount()==1) return ctx.getText();
         else return visit(ctx.getChild(0));
     }
 
@@ -145,11 +153,18 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitAdditiveExpression(CParser.AdditiveExpressionContext ctx) {
+        if (ctx.getChildCount()==1){
+            return visitChildren(ctx);
+        }
         return ctx.getText();
     }
 
     @Override
     public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
+        if(ctx.getChild(0).getText().equals("strcat")){
+            return "let new" + ctx.getChild(2).getChild(0).getText() + " = " + ctx.getChild(2).getChild(0).getText() +
+                    ".to_string() + " +  ctx.getChild(2).getChild(2).getText();
+        }
         if (ctx.getChildCount()==4){
             return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
                     + visit(ctx.getChild(2)) + ctx.getChild(3).getText();

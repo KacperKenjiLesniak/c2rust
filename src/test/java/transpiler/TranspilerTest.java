@@ -56,4 +56,23 @@ public class TranspilerTest {
         assertEquals("fn main(){\nif a == 5 {\na=6;\n}\nelse a=7;\n}", assignment);
     }
 
+    @Test
+    public void shouldTranspileStringInitialization(){
+        String assignment = transpiler.transpile("char a[] = \"test\";");
+
+        assertEquals("let a = \"test\";\n", assignment);
+    }
+
+    @Test
+    public void shouldAddTwoStringsTogether(){
+        String code = transpiler.transpile("int main(){char str[30] = \"Ala \";const char *strFrom = \"ma kota\";strcat (str, strFrom);}");
+
+        assertEquals("fn main(){\n" +
+                "let str = \"Ala \";\n" +
+                "let strFrom = \"ma kota\";\n" +
+                "let newstr = str.to_string() + strFrom;\n" +
+                "}", code);
+    }
+
+
 }
