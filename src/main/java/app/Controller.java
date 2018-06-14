@@ -33,6 +33,8 @@ public class Controller {
 
     public static String rustCodeStaticString = "";
 
+    public static String rustCodeStaticException = "";
+
     @FXML
     private void initialize(){
         unknownExpressions.setValue("Unknown Expresions");
@@ -42,7 +44,9 @@ public class Controller {
     }
 
     public void handleTranspileAction(ActionEvent actionEvent) {
+        rustCodeStaticException = "";
         String rustCodeString = transpiler.transpile(cCode.getCode());
-        rustCode.setCode(rustCodeString);
+        if (rustCodeStaticException.equals("")) rustCode.setCode(rustCodeString);
+        else rustCode.setCode(rustCodeStaticException);
     }
 }
