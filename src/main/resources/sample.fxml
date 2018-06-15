@@ -22,16 +22,6 @@
                 </Text>
                 <Text font="$x1" layoutX="972.0" layoutY="56.0" strokeType="OUTSIDE" strokeWidth="0.0" text="Rust code" />
                 <ProgressIndicator layoutX="683.0" layoutY="940.0" progress="0.0" />
-                <ChoiceBox fx:id="unknownExpressions" layoutX="96.0" layoutY="900.0" prefHeight="29.1015625" prefWidth="142.5">
-                    <items>
-                        <FXCollections fx:factory="observableArrayList">
-                            <String fx:value="Item 1" />
-                            <String fx:value="Item 2" />
-                            <String fx:value="Item 3" />
-                        </FXCollections>
-                    </items>
-                </ChoiceBox>
-                <Label layoutX="100.0" layoutY="867.0" prefHeight="31.1328125" text="Uknown expressions" />
             </children>
         </Pane>
     </children>

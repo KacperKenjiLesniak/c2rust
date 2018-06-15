@@ -20,10 +20,6 @@ public class Controller {
         this.transpiler = new Transpiler();
     }
 
-    ObservableList<String> unknownExpressionsList = FXCollections.observableArrayList("Ignore", "Copy");
-
-    @FXML
-    private ChoiceBox<String> unknownExpressions;
 
     @FXML
     private CCodeEditor cCode;
@@ -40,10 +36,6 @@ public class Controller {
 
     @FXML
     private void initialize(){
-        unknownExpressions.setValue("Unknown Expresions");
-        unknownExpressions.setItems(unknownExpressionsList);
-        unknownExpressions.getSelectionModel().selectFirst();
-
     }
 
     public void handleTranspileAction(ActionEvent actionEvent) {
