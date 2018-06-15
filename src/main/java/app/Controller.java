@@ -40,6 +40,7 @@ public class Controller {
 
     public void handleTranspileAction(ActionEvent actionEvent) {
         rustCodeStaticException = "";
+        rustCodeImportString.clear();
         String rustCodeString = transpiler.transpile(cCode.getCode());
         if (rustCodeStaticException.equals("")) rustCode.setCode(createImports() + "\n" + rustCodeString);
         else rustCode.setCode(rustCodeStaticException);

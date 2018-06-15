@@ -208,11 +208,22 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitPostfixExpression(CParser.PostfixExpressionContext ctx) {
-        if(ctx.getChild(0).getText().equals("strcat")){
+        if (ctx.getChild(0).getText().equals("strcat")) {
             return "let new" + ctx.getChild(2).getChild(0).getText() + " = " + ctx.getChild(2).getChild(0).getText() +
                     ".to_string() + " +  ctx.getChild(2).getChild(2).getText();
         }
-        if (ctx.getChildCount()==4){
+        if(ctx.getChild(0).getText().equals("printf")) {
+            String printedText = ctx.getChild(2).getText();
+            String newLine = "";
+            if (printedText.endsWith("\\n\"")) {
+                newLine = "ln";
+                printedText = printedText.substring(0, printedText.length()-3)+"\"";
+            }
+            if (newLine.isEmpty()) Controller.rustCodeImportString.add("use std::print;\n");
+            else Controller.rustCodeImportString.add("use std::println;\n");
+            return "print" + newLine + "!" + "(" + printedText + ")";
+        }
+        if (ctx.getChildCount() == 4) {
             return visit(ctx.getChild(0)) + ctx.getChild(1).getText()
                     + visit(ctx.getChild(2)) + ctx.getChild(3).getText();
         }
