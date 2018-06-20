@@ -5,8 +5,10 @@ import gen.C.CBaseVisitor;
 import gen.C.CParser;
 import org.antlr.v4.runtime.tree.ParseTree;
 
+import java.awt.font.NumericShaper;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.IntStream;
 
 
 public class Visitor extends CBaseVisitor<String> {
@@ -206,6 +208,19 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitJumpStatement(CParser.JumpStatementContext ctx) {
         return visitChildren(ctx) + "\n";
+    }
+
+    @Override
+    public String visitStructDeclaration(CParser.StructDeclarationContext ctx) {
+        String fieldType = ctx.getChild(0).getText();
+        if (fieldType.equals("char")) return findDirectDeclarator(ctx.getChild(0).getParent()) + ": String, \n";
+    }
+
+    private String findDirectDeclarator(ParseTree child) {
+        if (child.getChildCount() < 1) return "";
+        if (child.getClass().equals(CParser.DirectDeclaratorContext.class)) return child.getText();
+        String text;
+        IntStream.range(0, child.getChildCount()).forEach(index -> findDirectDeclarator(child.getChild(index)));
     }
 
     @Override
