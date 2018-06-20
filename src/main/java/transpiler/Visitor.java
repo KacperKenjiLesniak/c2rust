@@ -110,7 +110,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitCompoundStatement(CParser.CompoundStatementContext ctx){
-        return "{\n" + visitChildren(ctx) + "\n}\n";
+        return "{\n" + visitChildren(ctx) + "}\n";
     }
 
     @Override
@@ -149,7 +149,7 @@ public class Visitor extends CBaseVisitor<String> {
         }
         else if (ctx.getChildCount() == 7) {
             String elseStatement = ctx.getChild(5).getText() + " " + visit(ctx.getChild(6));
-            return ifStatement + "\n" + elseStatement + "\n";
+            return ifStatement + elseStatement;
         }
         return visitChildren(ctx);
     }
@@ -184,7 +184,9 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitExpressionStatement(CParser.ExpressionStatementContext ctx) {
-        return visit(ctx.getChild(0)) + ctx.getChild(1).getText();
+        String newLine = "";
+        if (ctx.getChildCount() > 1 && ctx.getChild(1).getText().equals(";")) newLine = "\n";
+        return visit(ctx.getChild(0)) + ctx.getChild(1).getText() + newLine;
     }
 
     @Override
@@ -249,10 +251,10 @@ public class Visitor extends CBaseVisitor<String> {
     @Override
     public String visitIterationStatement(CParser.IterationStatementContext ctx) {
         if (ctx.getChild(0).getText().equals("while")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4)) + "\n";
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
         }
         else if (ctx.getChild(0).getText().equals("for")) {
-            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4)) + "\n";
+            return ctx.getChild(0).getText() + " " + visit(ctx.getChild(2)) + visit(ctx.getChild(4));
         }
         return visitChildren(ctx);
     }

@@ -16,7 +16,7 @@ public class MyErrorStrategy extends DefaultErrorStrategy {
             charPositionInLine =e.getOffendingToken().getCharPositionInLine();
             String msg = "mismatched input at: " + line + ":" + charPositionInLine + "\n" + getTokenErrorDisplay(e.getOffendingToken()) +
                     " expecting " + e.getExpectedTokens().toString(recognizer.getVocabulary());
-            Controller.rustCodeStaticException = msg;
+            Controller.rustCodeStaticException += msg;
         }
         super.reportError(recognizer, e);
     }

@@ -34,28 +34,28 @@ public class TranspilerTest {
     public void shouldTranspileMainFunction(){
         String assignment = transpiler.transpile("int main(){};");
 
-        assertEquals("fn main(){\n\n}\n", assignment);
+        assertEquals("fn main(){\n}\n", assignment);
     }
 
     @Test
     public void shouldTranspileIfStatement(){
         String assignment = transpiler.transpile("int main(){if(a==5){a=6;}}");
 
-        assertEquals("fn main(){\nif a == 5 {\na=6;\n}\n\n}\n", assignment);
+        assertEquals("fn main(){\nif a == 5 {\na=6;\n}\n}\n", assignment);
     }
 
     @Test
     public void shouldTranspileIfAndStatement(){
         String assignment = transpiler.transpile("int main(){if(a==5 && a < 6 && a > 0){a = 6;}}");
 
-        assertEquals("fn main(){\nif a == 5 && a < 6 && a > 0 {\na=6;\n}\n\n}\n", assignment);
+        assertEquals("fn main(){\nif a == 5 && a < 6 && a > 0 {\na=6;\n}\n}\n", assignment);
     }
 
     @Test
     public void shouldTranspileIfElseStatement(){
         String assignment = transpiler.transpile("int main(){if(a==5){a=6;}else a=7;}");
 
-        assertEquals("fn main(){\nif a == 5 {\na=6;\n}\n\nelse a=7;\n\n}\n", assignment);
+        assertEquals("fn main(){\nif a == 5 {\na=6;\n}\nelse a=7;\n}\n", assignment);
     }
     @Test
     public void shouldTranspileFunctionDefinition() {
@@ -69,11 +69,11 @@ public class TranspilerTest {
 
         assertEquals("fn timesTwo(a: i32) -> i32\n" +
                 "{\n" +
-                "a*2\n\n" +
+                "a*2\n" +
                 "}\n" +
                 "\n" +
                 "fn main(){\n" +
-                "let b = timesTwo(2);\n\n" +
+                "let b = timesTwo(2);\n" +
                 "}\n", code);
     }
 
@@ -89,10 +89,9 @@ public class TranspilerTest {
                 "use std::iter::step_by;\n" +
                 "\n" +
                 "fn main(){\n" +
-                "for a in (1..6).rev().step_by(2){\n" +
+                "for a in (1..6).rev().step_by(2){" +
                 "\n" +
                 "}\n" +
-                "\n\n" +
                 "}\n", code);
     }
     @Test
