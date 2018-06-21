@@ -7,6 +7,7 @@ import org.antlr.v4.runtime.tree.ParseTree;
 
 import java.awt.font.NumericShaper;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.stream.IntStream;
 
@@ -57,6 +58,7 @@ public class Visitor extends CBaseVisitor<String> {
 
     @Override
     public String visitDeclaration(CParser.DeclarationContext ctx){
+        if (ctx.getChild(1).getText().equals(";")) return visitChildren(ctx);
         final ParseTree assignment = ctx.getChild(1).getChild(0);
         final ParseTree declarator = assignment.getChild(0);
         if (ctx.getChildCount() > 2 && ctx.getChild(0).getText().equals("char") &&
@@ -97,7 +99,7 @@ public class Visitor extends CBaseVisitor<String> {
         if (ctx.getText().equals("char")) return "char";
         if (ctx.getText().equals("int")) return "i32";
         if (ctx.getText().equals("bool")) return "bool";
-        else return ctx.getText();
+        else return visitChildren(ctx);
     }
 
     @Override
@@ -211,16 +213,27 @@ public class Visitor extends CBaseVisitor<String> {
     }
 
     @Override
+    public String visitStructOrUnionSpecifier(CParser.StructOrUnionSpecifierContext ctx) {
+        if (ctx.getChildCount()>4){
+            return ctx.getChild(0).getText() + " " + ctx.getChild(1).getText() + " " + ctx.getChild(2).getText() + "\n" +
+                    visit(ctx.getChild(3)) + ctx.getChild(4).getText();
+        }
+        else return visitChildren(ctx);
+    }
+
+    @Override
     public String visitStructDeclaration(CParser.StructDeclarationContext ctx) {
         String fieldType = ctx.getChild(0).getText();
         if (fieldType.equals("char")) return findDirectDeclarator(ctx.getChild(0).getParent()) + ": String, \n";
+        else return ctx.getChild(0).getChild(1).getText() + ":" + visit(ctx.getChild(0).getChild(0)) + ",\n";
     }
 
     private String findDirectDeclarator(ParseTree child) {
         if (child.getChildCount() < 1) return "";
-        if (child.getClass().equals(CParser.DirectDeclaratorContext.class)) return child.getText();
-        String text;
-        IntStream.range(0, child.getChildCount()).forEach(index -> findDirectDeclarator(child.getChild(index)));
+        if (child.getClass().equals(CParser.DirectDeclaratorContext.class) && child.getChildCount() < 2) return child.getText();
+        List<String> text = new ArrayList<>();
+        IntStream.range(0, child.getChildCount()).forEach(index -> text.add(findDirectDeclarator(child.getChild(index))));
+        return String.join("", text);
     }
 
     @Override
