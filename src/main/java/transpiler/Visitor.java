@@ -216,7 +216,7 @@ public class Visitor extends CBaseVisitor<String> {
     public String visitStructOrUnionSpecifier(CParser.StructOrUnionSpecifierContext ctx) {
         if (ctx.getChildCount()>4){
             return ctx.getChild(0).getText() + " " + ctx.getChild(1).getText() + " " + ctx.getChild(2).getText() + "\n" +
-                    visit(ctx.getChild(3)) + ctx.getChild(4).getText();
+                    visit(ctx.getChild(3)) + ctx.getChild(4).getText() + "\n";
         }
         else return visitChildren(ctx);
     }

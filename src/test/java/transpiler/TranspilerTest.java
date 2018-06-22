@@ -6,8 +6,8 @@ import org.junit.Test;
 import static org.junit.Assert.*;
 
 public class TranspilerTest {
-    Transpiler transpiler = new Transpiler();
-    Controller controller = new Controller();
+    private Transpiler transpiler = new Transpiler();
+    private Controller controller = new Controller();
 
     @Test
     public void shouldTranspilerDeclaration(){
@@ -78,6 +78,19 @@ public class TranspilerTest {
     }
 
     @Test
+    public void shouldTranspileFor(){
+        String code = transpiler.transpile("int main() {\n" +
+                "  for (int a = 0; a < 5; a = a + 1) {\n" +
+                "  }\n" +
+                "}");
+
+        assertEquals("fn main(){\n" +
+                "for a in 0..5{\n" +
+                "}\n" +
+                "}\n", code);
+    }
+
+    @Test
     public void shouldTranspileForWithStep(){
         String code = transpiler.transpile("int main() {\n" +
                 "  for (int a = 5; a > 0; a = a -2) {\n" +
@@ -111,4 +124,34 @@ public class TranspilerTest {
                 "let newstr = str.to_string() + strFrom;\n" +
                 "}\n", code);
     }
+
+    @Test
+    public void shouldPrintOutString(){
+        String code = transpiler.transpile("int main(){printf(\"Test\");}");
+
+        assertEquals("fn main(){\n" +
+                "print!(\"Test\");\n" +
+                "}\n", code);
+    }
+
+    @Test
+    public void shouldPrintOutStringWithNewLine(){
+        String code = transpiler.transpile("int main(){printf(\"Test\\n\");}");
+
+        assertEquals("fn main(){\n" +
+                "println!(\"Test\");\n" +
+                "}\n", code);
+    }
+
+    @Test
+    public void shouldTranspileStructDefinition(){
+        String code = transpiler.transpile("struct tests{ int a; float b;};");
+
+        assertEquals("struct tests {\n" +
+                "a:i32,\n" +
+                "b:f32,\n" +
+                "}\n", code);
+    }
+
+
 }
